@@ -3,8 +3,8 @@ deriv: f64, // dp/dx̄
 deriv_in: *f64, // dy/dp
 deriv_out: *f64, // dy/dx̄
 
-data: *NormalData,
-mode: *NormalMode,
+data: *DistData,
+mode: *DistMode,
 
 const Self: type = @This();
 
@@ -12,10 +12,10 @@ pub fn init(allocator: Allocator, tape: []f64) !*Self {
     const self: *Self = try allocator.create(Self);
     errdefer allocator.destroy(self);
 
-    self.data = try NormalData.init(allocator, tape);
+    self.data = try DistData.init(allocator, tape);
     errdefer self.data.deinit(allocator);
 
-    self.mode = try NormalMode.init(allocator, tape);
+    self.mode = try DistMode.init(allocator, tape);
 
     self.deriv_in = &tape[0];
     self.deriv_out = &tape[1];
@@ -56,5 +56,5 @@ const std = @import("std");
 const testing = std.testing;
 const Allocator = std.mem.Allocator;
 
-const NormalData = @import("./NormalData.zig");
-const NormalMode = @import("./NormalMode.zig");
+const DistData = @import("./DistData.zig");
+const DistMode = @import("./DistMode.zig");

@@ -1,5 +1,5 @@
-value: f64, // x
-deriv: f64, // dx̄/dx
+value: f64, // μ
+deriv: f64, // dx̄/dμ
 deriv_in: *f64, // dy/dx̄
 
 const Self: type = @This();
@@ -14,15 +14,15 @@ pub fn deinit(self: *Self, allocator: Allocator) void {
     allocator.destroy(self);
 }
 
-pub fn forward(self: *Self, data: f64) void {
-    self.value = data;
+pub fn forward(self: *Self, mode: f64) void {
+    self.value = mode;
 }
 
 pub fn backward(self: *Self, deriv_out: []f64) void {
-    deriv_out[0] = self.deriv * self.deriv_in.*;
+    deriv_out[1] = self.deriv * self.deriv_in.*;
 }
 
-test "Normal Data" {
+test "Distribution Mode" {
     const page: Allocator = testing.allocator;
     var tape: [2]f64 = undefined;
 

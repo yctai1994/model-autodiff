@@ -29,12 +29,12 @@ pub fn forward(self: *Self, data: f64, mode: f64, scale: f64) void {
     self.cdata.forward(data, mode);
     self.scale.forward(scale);
 
-    const temp: f64 = self.cdata.value / scale;
+    const temp: f64 = sqr(self.cdata.value) + sqr(scale);
 
-    self.value = FAC * @exp(-0.5 * sqr(temp)) / scale;
+    self.value = scale / (PI * temp);
 
-    self.cdata.deriv = -self.value * (temp / scale); // dp/dx̄
-    self.scale.deriv = self.value * ((sqr(temp) - 1.0) / scale); // dp/dσ
+    self.cdata.deriv = -self.value * (2.0 * self.cdata.value) / temp; // dp/dx̄
+    self.scale.deriv = self.value * (1.0 / scale - 2.0 * scale / temp); // dp/dσ
 }
 
 pub fn backward(self: *Self, final_deriv_out: []f64) void {
@@ -44,7 +44,7 @@ pub fn backward(self: *Self, final_deriv_out: []f64) void {
     self.scale.backward(final_deriv_out);
 }
 
-test "Normal Distribution" {
+test "Lorentz Distribution" {
     const page: Allocator = testing.allocator;
     var tape: [2]f64 = undefined;
 
@@ -65,7 +65,6 @@ fn sqr(x: f64) f64 {
 }
 
 const PI: comptime_float = 3.141592653589793238462643383279502884197; // in f128
-const FAC: comptime_float = 1.0 / @sqrt(2.0 * PI);
 
 const std = @import("std");
 const debug = std.debug;
